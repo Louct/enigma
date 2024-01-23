@@ -1,0 +1,1550 @@
+repeat wait(1) until game:IsLoaded()
+if game.ReplicatedStorage:FindFirstChild('NIGGA') == nil then
+end
+
+local whitelisted = loadstring(game:HttpGet(("https://pastebin.com/raw/AzmfUpE7")))()
+
+
+-- toggles
+local toggles = {
+    WaterWalker = false,
+    FastSpeed = false,
+    CraftArrow = false,
+    DropArrow = false,
+    StreamerMode = false,
+    Mining = false,
+    Pick = false,
+    Harvesting = false,
+    Planting = false,
+    Eating = false,
+    tping = false,
+    killing = false,
+    healing = false,
+    hitboxing = false,
+    anticombat = false,
+    aiming = false,
+    esping = false,
+    afking = true,
+    plantboxing3 = false,
+    highjump = false,
+    plantboxing = false,
+}
+
+local saved_toggles = {
+    essence_farm = true,
+    none_yet = false
+}
+
+-- funcs
+local ancient_connection
+local walks = 16
+function changewalkspeed()
+    local hum = game.Players.LocalPlayer.Character.Humanoid
+    hum.WalkSpeed = walks
+end
+
+function savesettings()
+	print('saving settings...')
+	local json;
+	local https = game:GetService('HttpService')
+	if (writefile) then
+		json = https:JSONEncode(saved_toggles)
+		writefile("Enigma_Softworks_Saves.txt", json)
+		print('saved settings')
+        print(unpack(saved_toggles))
+	else
+		warn('sorry your executor does not have file saving...')
+	end
+end
+
+function loadsettings()
+	print('Loading...')
+	local https = game:GetService('HttpService');
+	if (readfile and isfile and isfile("Enigma_Softworks_Saves.txt")) then
+		saved_toggles = https:JSONDecode(readfile("Enigma_Softworks_Saves.txt"))
+        print(unpack(saved_toggles))
+		print('loaded succesfully !')
+		-- spawn(function()
+		-- 	if saved_toggles.essence_farm then
+		-- 		essence()
+		-- 	end
+		-- end)
+	end
+end
+-- nice
+
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+local Window
+
+local iswhitelisted = false
+local iswhitelisted2 = true
+
+for _, v in pairs(whitelisted) do
+    if tostring(v) == tostring(game:GetService("RbxAnalyticsService"):GetClientId()) then
+        iswhitelisted = true
+        break
+    end
+end
+wait()
+if iswhitelisted == true then
+    if iswhitelisted2 then
+        Window = OrionLib:MakeWindow({Name = "Enigma Softworks", HidePremium = false, IntroText = "Welcome "..game.Players.LocalPlayer.Name.." !", CloseCallback = function()
+            for i, v in pairs(toggles) do
+                v = false
+            end
+            wait()
+            OrionLib:Destroy()
+            pcall(function()
+                game.Workspace:FindFirstChild('NIGGA'):Destroy()
+            end)
+        end
+        })
+    end
+else
+    Window = OrionLib:MakeWindow({Name = "Enigma Softworks", HidePremium = true, IntroText = "Welcome "..game.Players.LocalPlayer.Name.." !", CloseCallback = function()
+        for i, v in pairs(toggles) do
+            v = false
+        end
+        wait()
+        OrionLib:Destroy()
+        pcall(function()
+            game.Workspace:FindFirstChild('NIGGA'):Destroy()
+        end)
+    end
+    })
+end
+
+-- Hack Renders
+game.Players.LocalPlayer.CameraMaxZoomDistance = 5000
+task.spawn(function()
+	game:GetService("Lighting").FogEnd = 9999
+	while wait(10) do
+		game:GetService("Lighting").FogEnd = 9999
+	end
+end)
+
+-- vars
+local cursor = "&cursor="..""
+local url = "https://games.roblox.com/v1/games/6708206173/servers/Public?excludeFullGames=false&limit=100https://games.roblox.com/v1/games/6708206173/servers/Public?excludeFullGames=true&limit=10"
+local data = game:HttpGet(url)
+local newdata0 = game:GetService'HttpService':JSONDecode(data)
+local table = newdata0["data"]
+local minimum_players = 2
+local found = false
+local TeleportService = game:GetService("TeleportService")
+local playerss = game.Players:GetPlayers()
+print(#playerss)
+local searching = false
+
+local dev_ = "NO NIGGA"
+local pickup_remote = game.ReplicatedStorage.Events.Pickup
+local swing_remote = game.ReplicatedStorage.Events.SwingTool
+local remote_craft = game.ReplicatedStorage.Events.CraftItem
+local remote_drop = game.ReplicatedStorage.Events.DropBagItem
+local interact_remote = game.ReplicatedStorage.Events.InteractStructure
+local use_remote = game.ReplicatedStorage.Events.UseBagItem
+
+local bb = game:GetService('VirtualUser')
+
+local ESPER = Instance.new("BillboardGui")
+local ESPER_TextLabel = Instance.new("TextLabel")
+ESPER.AlwaysOnTop = true
+ESPER.Enabled = false
+ESPER.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ESPER.Active = true
+ESPER.LightInfluence = 1.000
+ESPER.Size = UDim2.new(0, 125, 0, 35)
+ESPER.StudsOffset = Vector3.new(0, 4, 0)
+
+ESPER_TextLabel.Parent = ESPER
+ESPER_TextLabel.TextStrokeTransparency = 0
+ESPER_TextLabel.BackgroundTransparency = 1
+ESPER_TextLabel.Size = UDim2.new(0.95, 0, 0.95, 0)
+ESPER_TextLabel.TextColor3 = Color3.fromRGB(170, 170, 0)
+ESPER_TextLabel.TextStrokeColor3 = Color3.fromRGB(170, 170, 0)
+ESPER_TextLabel.TextScaled = true
+ESPER_TextLabel.TextWrapped = true
+
+local humanoid = game.Players.LocalPlayer.Character:WaitForChild('Humanoid')
+local plr = game:service"Players".LocalPlayer;
+local tween_s = game:service"TweenService";
+
+local selected_plant = "None"
+local selected_ore = "None"
+local selected_position = "None"
+local ores = {"None", "Gold Node", "Crystal Lode", "Iron Node", "Coal Node", "Adurite Node"}
+
+local aplant = selected_plant
+
+local positions = {
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+}
+-- funcs
+local function getDistance(pointA, pointB)
+    return (pointA - pointB).magnitude
+end
+
+game:service'Players'.LocalPlayer.Idled:connect(function()
+    if toggles.afking then
+        bb:CaptureController()bb:ClickButton2(Vector2.new())
+    end
+end)
+
+local remote69 = game.ReplicatedStorage.Events.SpawnFirst
+humanoid.Died:Connect(function()
+    if toggles.anticombat then
+        local hrt = game.Players.LocalPlayer.Character.HumanoidRootPart
+        local hrtx = hrt.CFrame.X
+        local hrty = hrt.CFrame.Y
+        local hrtz = hrt.CFrame.Z
+        task.wait(3)
+        remote69:InvokeServer()
+        remote69:InvokeServer()
+        task.wait(2.5)
+        local hrt2 = game.Players.LocalPlayer.Character.HumanoidRootPart
+        hrt2.NameGui.TextLabel:Destroy()
+        hrt2.HealthGui:Destroy()
+        hrt2.CFrame = CFrame.new(hrtx, hrty, hrtz)
+        task.wait(0.3)
+        for _, part in pairs(game.Workspace.Items:GetChildren()) do
+            if part:IsA("Part") or part:IsA("MeshPart") or part:IsA('UnionOperation') then
+                if math.floor(math.abs((game.Players.LocalPlayer.Character.HumanoidRootPart.Position - part.Position).Magnitude)) <= 15 then
+                    task.wait(0.005)
+                    pickup_remote:FireServer(part)
+                end
+            elseif part:IsA('Model') then
+                if part.PrimaryPart ~= nil and math.floor(math.abs((game.Players.LocalPlayer.Character.HumanoidRootPart.Position - part.PrimaryPart.Position).Magnitude)) <= 15 then
+                    task.wait(0.005)
+                    pickup_remote:FireServer(part)
+                end
+            end
+        end
+        hrt2.CFrame = CFrame.new(0, 9999, 0)
+        wait(0.3)
+        game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, game.Players.LocalPlayer)
+    end
+end)
+
+function StringToCFrame(String)
+    local Split = string.split(String, ",")
+    return CFrame.new(Split[1],Split[2],Split[3],Split[4],Split[5],Split[6],Split[7],Split[8],Split[9],Split[10],Split[11],Split[12])
+end
+
+function tweenedtp(...)
+    wait(0.1)
+    print('tween started')
+    local tic_k = tick();
+    local params = {...};
+    local cframe = CFrame.new(params[1],params[2],params[3]);
+    local vector = Vector3.new(params[1], params[2], params[3])
+    local distance = math.floor(math.abs((game.Players.LocalPlayer.Character.HumanoidRootPart.Position - vector).Magnitude))
+    local traveiltime = math.floor(distance / 10)
+    local info = TweenInfo.new(traveiltime,Enum.EasingStyle.Linear);
+    local tween,err = pcall(function()
+    	if toggles.tping or saved_toggles.essence_farm then
+            local tween = tween_s:Create(plr.Character["HumanoidRootPart"],info,{CFrame=cframe});
+            spawn(function()
+                while tween.PlaybackState == Enum.PlaybackState.Playing do
+                    wait(1)
+                    print(saved_toggles.essence_farm)
+                    if toggles.tping == false and saved_toggles.essence_farm == false then
+                        tween:Cancel()
+                        break
+                    end
+                end
+            end)
+            tween:Play();
+            tween.Completed:Wait(0.5)
+    	end
+	end)
+    if not tween then return err end
+end
+local cursor = "&cursor="..""
+local url = "https://games.roblox.com/v1/games/6708206173/servers/Public?excludeFullGames=false&limit=100https://games.roblox.com/v1/games/6708206173/servers/Public?excludeFullGames=true&limit=10"
+local data = game:HttpGet(url)
+local newdata0 = game:GetService'HttpService':JSONDecode(data)
+local table = newdata0["data"]
+local minimum_players = 5
+local found = false
+local TeleportService = game:GetService("TeleportService")
+local playerss = game.Players:GetPlayers()
+print(#playerss)
+local searching = false
+local function secondsearch()
+    wait(0.1)
+    local url2 = "https://games.roblox.com/v1/games/11729688377/servers/Public?excludeFullGames=true&limit=100https://games.roblox.com/v1/games/6708206173/servers/Public?excludeFullGames=true&limit=10"..cursor
+    local data2 = game:HttpGet(url2)
+    local newdata1 = game:GetService'HttpService':JSONDecode(data2)
+    local table = newdata1["data"]
+    
+    for i, v in pairs(table) do
+        local id = v["playing"]
+        if tonumber(id) >= minimum_players and tonumber(id) ~= v["maxPlayers"] then
+            print("found")
+            found = true
+            TeleportService:TeleportToPlaceInstance(game.PlaceId,v["id"],game.Players.LocalPlayer)
+            cursor = newdata0["nextPageCursor"]
+            print("failed", i)
+            break
+        end
+    end
+end
+local function firstsearch()
+    for i, v in pairs(table) do
+        local id = v["playing"]
+        if tonumber(id) >= minimum_players and tonumber(id) ~= v["maxPlayers"] then
+            print("found")
+            TeleportService:TeleportToPlaceInstance(game.PlaceId,v["id"],game.Players.LocalPlayer)
+            break
+        else
+            cursor = newdata0["nextPageCursor"]
+            print("failed", i)
+            repeat
+                secondsearch()
+            until found
+        end
+    end
+end
+function essence()
+    wait(3)
+    if game:GetService("Workspace").Resources:FindFirstChild("Ancient Tree") ~= nil and game:GetService("Workspace").Resources["Ancient Tree"]:FindFirstChild('Trunk') ~= nil then
+        print('found ancient tree')
+    else
+        repeat 
+            firstsearch()
+            wait(2)
+        until game:GetService("Workspace").Resources:FindFirstChild("Ancient Tree") ~= nil and game:GetService("Workspace").Resources["Ancient Tree"] ~= nil
+        firstsearch()
+    end
+    local datree = game:GetService("Workspace").Resources["Ancient Tree"].Trunk
+
+    remote69:InvokeServer()
+    print('spawned')
+    game.Workspace.Camera.CameraType = Enum.CameraType.Custom
+    game.Players.LocalPlayer.PlayerGui.SpawnGui.Enabled = false
+    game.Players.LocalPlayer.PlayerGui.MainGui.Enabled = true
+    wait(0.1)
+    local dahrt = game.Players.LocalPlayer.Character.HumanoidRootPart
+    
+    tweenedtp(-114.619194, -8.32501507, -686.709412)
+end
+function plant()
+	aplant = tostring(selected_plant)
+	pcall(function()
+		for i, v in pairs(workspace.Deployables:GetChildren()) do
+			if v.Name == "Plant Box" and v:FindFirstChild(aplant) == nil then
+                if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v.Reference.Position).magnitude < 50 then
+					task.wait(0.025)
+					interact_remote:FireServer(v, aplant)
+				end
+			end
+		end
+	end)
+end
+
+function harvest(aplant)
+	pcall(function()
+		for i, v in pairs(game.Workspace:GetChildren()) do
+			if v:IsA('Model') and v.Name == aplant.." Bush" or v.Name == aplant.." Patch Crop" or v.Name == aplant.." Tree" or v.Name == aplant.." Crop" then
+				if v:FindFirstChild('Reference') then
+					if (game.Players.LocalPlayer.Character.Head.Position - v.Reference.Position).magnitude < 50 then
+						pickup_remote:FireServer(v)
+					end
+				else
+					if (game.Players.LocalPlayer.Character.Head.Position - v:FindFirstChild(aplant).Position).magnitude < 50 then
+						pickup_remote:FireServer(v)
+					end
+				end
+			end
+		end
+	end)
+end
+
+local mine_parts = {}
+function mine_pls()
+    for _, part in pairs(game:GetService("Workspace").Resources:GetChildren()) do
+        if part:IsA("Model") then
+            if part:FindFirstChildWhichIsA('Part') or part:FindFirstChildWhichIsA('BasePart') or part:FindFirstChildWhichIsA('MeshPart') or part:FindFirstChildWhichIsA("UnionOperation") then
+                for _, part2 in pairs(part:GetChildren()) do
+                    if part2:IsA('Part') or part2:IsA('UnionOperation') or part2:IsA('MeshPart') or part:IsA('BasePart') then
+                        if math.floor(math.abs((game.Players.LocalPlayer.Character.HumanoidRootPart.Position - part2.Position).Magnitude)) <= 20 then
+                            mine_parts[#mine_parts+1] = part2
+                        end
+                    end
+                end
+            end
+        end
+    end
+    wait(0.3)
+    swing_remote:FireServer(mine_parts)
+    mine_parts = {}
+end
+
+local function WalkSpeedChange()
+    pcall(function()
+        if toggles.WaterWalker == true then
+            local hum = game.Players.LocalPlayer.Character.Humanoid
+            hum.WalkSpeed = 16
+        end
+    end)
+end
+local water_walk_connection
+function WaterWalk()
+    pcall(function()
+        local hum = game.Players.LocalPlayer.Character.Humanoid
+        hum.WalkSpeed = 16
+        local event = hum:GetPropertyChangedSignal("WalkSpeed"):Connect(WalkSpeedChange)
+        water_walk_connection = event
+        hum.Died:Connect(function()
+            event:Disconnect()
+            if toggles.anticombat == true then
+                local hrt = game.Players.LocalPlayer.Character.HumanoidRootPart
+                local hrtx = hrt.CFrame.X
+                local hrty = hrt.CFrame.Y
+                local hrtz = hrt.CFrame.Z
+                task.wait(3)
+                remote69:InvokeServer()
+                remote69:InvokeServer()
+                task.wait(2.5)
+                local hrt2 = game.Players.LocalPlayer.Character.HumanoidRootPart
+                hrt2.NameGui.TextLabel:Destroy()
+                hrt2.HealthGui:Destroy()
+                hrt2.CFrame = CFrame.new(hrtx, hrty, hrtz)
+                task.wait(0.3)
+                for _, part in pairs(game.Workspace.Items:GetChildren()) do
+                    if part:IsA("Part") or part:IsA("MeshPart") or part:IsA('UnionOperation') then
+                        if math.floor(math.abs((game.Players.LocalPlayer.Character.HumanoidRootPart.Position - part.Position).Magnitude)) <= 13 then
+                            task.wait(0.025)
+                            pickup_remote:FireServer(part)
+                        end
+                    elseif part:IsA('Model') then
+                        if part.PrimaryPart ~= nil and math.floor(math.abs((game.Players.LocalPlayer.Character.HumanoidRootPart.Position - part.PrimaryPart.Position).Magnitude)) <= 13 then
+                            task.wait(0.025)
+                            pickup_remote:FireServer(part)
+                        end
+                    end
+                end
+                hrt2.CFrame = CFrame.new(0, 9999, 0)
+                wait(0.3)
+                game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, game.Players.LocalPlayer)
+            end
+        end)
+    end)
+end
+local ancient_connection2
+if game:GetService("Players").LocalPlayer.PlayerGui.SpawnGui.Customization.PlayButton ~= nil then
+     game:GetService("Players").LocalPlayer.PlayerGui.SpawnGui.Customization.PlayButton.MouseButton1Click:Connect(function()
+        if toggles.WaterWalker == true then
+            WaterWalk()
+        end
+        ancient_connection = game.Players.LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+            if game.Players.LocalPlayer.Character.Humanoid.WalkSpeed ~= walks and walks ~= 16 then
+                pcall(changewalkspeed)
+            end
+        end)
+        ancient_connection2 = ancient_connection
+        game.Players.LocalPlayer.Character.Humanoid.Died:Connect(function()
+            ancient_connection:Disconnect()
+        end)
+
+    end)
+end
+local second_connection
+second_connection = game.Players.LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+    if game.Players.LocalPlayer.Character.Humanoid.WalkSpeed ~= walks and walks ~= 16 then
+        pcall(changewalkspeed)
+    end
+end)
+game.Players.LocalPlayer.Character.Humanoid.Died:Connect(function()
+    second_connection:Disconnect()
+end)
+-- Welcome Notification
+OrionLib:MakeNotification({
+	Name = "Thank you for using Enigma Softworks !",
+	Content = "Join discord for stay updated !",
+	Image = "rbxassetid://4483345998",
+	Time = 5
+})
+
+-- Tabs
+local Home = Window:MakeTab({
+	Name = "Main",
+	Icon = "rbxassetid://11334465909",
+	PremiumOnly = false
+})
+local Farm = Window:MakeTab({
+	Name = "Farm",
+	Icon = "rbxassetid://11334710528",
+	PremiumOnly = false
+})
+local Combat = Window:MakeTab({
+	Name = "Combat",
+	Icon = "rbxassetid://11334570219",
+	PremiumOnly = false
+})
+
+local Esp = Window:MakeTab({
+	Name = "ESP",
+	Icon = "rbxassetid://11334776784",
+	PremiumOnly = false
+})
+
+local Build = Window:MakeTab({
+	Name = "Build",
+	Icon = "rbxassetid://11334738485",
+	PremiumOnly = false
+})
+
+local Other = Window:MakeTab({
+    Name = "Other",
+    Icon = "rbxassetid://11334794044",
+    PremiumOnly = false
+})
+local Misc = Window:MakeTab({
+    Name = 'Misc',
+    Icon = "rbxassetid://14089396958",
+    PremiumOnly = false
+})
+
+local DaTab = Window:MakeTab({
+    Name = "Premium",
+    Icon = "rbxassetid://5413626876",
+    PremiumOnly = true
+})
+pcall(loadsettings)
+
+-- Water Walker Toggle
+Home:AddToggle({
+	Name = "Water Walker",
+    Default = false,
+	Callback = function(value)
+        if value then
+            toggles.WaterWalker = true
+            WaterWalk()
+        else
+            toggles.WaterWalker = false
+            if water_walk_connection ~= nil then
+                water_walk_connection:Disconnect()
+            end
+        end
+	end    
+})
+
+--Streamer Mode Button
+Home:AddToggle({
+	Name = "Streamer Mode",
+    Default = false,
+    Callback = function(value)
+        if value then
+            toggles.StreamerMode = true
+            game:GetService("Players").LocalPlayer.PlayerGui.SecondaryGui.Enabled = false
+            game:GetService("Players").LocalPlayer.PlayerGui.Chat.Enabled = false
+            game:GetService("Players").LocalPlayer.PlayerGui.MainGui.Panels.Topbar.CoinsText.TextTransparency = 1
+        else
+            toggles.StreamerMode = false
+            game:GetService("Players").LocalPlayer.PlayerGui.SecondaryGui.Enabled = true
+            game:GetService("Players").LocalPlayer.PlayerGui.Chat.Enabled = true
+            game:GetService("Players").LocalPlayer.PlayerGui.MainGui.Panels.Topbar.CoinsText.TextTransparency = 0
+        end
+    end
+})
+-- Tp To Void Button
+Home:AddButton({
+	Name = "Tp to Void",
+	Callback = function()
+      	game:GetService("TeleportService"):Teleport(11879754496)
+  	end    
+})
+-- Get out of Hut Button
+Home:AddButton({
+	Name = "Get out of Hut",
+	Callback = function()
+        if game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
+            local dahrt = game.Players.LocalPlayer.Character.HumanoidRootPart
+            dahrt.CFrame = CFrame.new(dahrt.CFrame.X, dahrt.CFrame.Y - 20, dahrt.CFrame.Z)
+        end
+    end
+})
+-- Make Armour Invisible Button
+Home:AddButton({
+	Name = "Make your armour invisible (equip/unequip for visible)",
+	Callback = function(value)
+        for i, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+            if v.ClassName == "Accessory" and v.Handle:FindFirstChild("Weld") then
+                v.Handle.Weld:Destroy()
+            end
+        end
+        for i, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+            if v.ClassName == "Accessory" and v.Handle:FindFirstChild("AccessoryWeld") then
+                v.Handle:FindFirstChild("AccessoryWeld"):Destroy()
+            end
+        end
+        for i, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+            if v.ClassName == "Accessory" and v.Handle:FindFirstChild("AccessoryWeld") then
+                v.Handle:FindFirstChild("AccessoryWeld"):Destroy()
+            end
+        end
+        for i, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+            if v.ClassName == "Accessory" and v.Part:FindFirstChild("Weld") then
+                v.Part:FindFirstChild("Weld"):Destroy()
+            end
+        end
+        for i, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+            if v.ClassName == "Accessory" and v.Part:FindFirstChild("Weld") then
+                v.Part:FindFirstChild("Weld"):Destroy()
+            end
+        end
+        for i, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+            if v.ClassName == "Model" and v.Part:FindFirstChild("Weld") then
+                v.Part:FindFirstChild("Weld"):Destroy()
+            end
+        end
+    end
+})
+-- Make Tool Invisible Button
+Home:AddButton({
+	Name = "Make your tool invisible (equip/unequip for visible)",
+	Callback = function()
+        for i, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+            if v.Name == "God Rock" and v:FindFirstChild("Part") then
+                v.Part.Weld:Destroy()
+            else
+                for i, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+                    if v.ClassName == "Model" and v.Handle:FindFirstChild("ToolWeld") then
+                        v.Handle.ToolWeld:Destroy()
+                        wait(1)
+                        v.Handle.Anchored = true
+                    end
+                end
+            end
+        end
+        for i, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+            if v.Name == "Club" and v.Handle:FindFirstChild("ToolWeld") then
+                v.Handle.ToolWeld:Destroy()
+                wait(1)
+                v.Handle.Anchored = true
+            else
+                for i, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+                    if v.ClassName == "Model" and v.Handle:FindFirstChild("ToolWeld") then
+                        v.Handle.ToolWeld:Destroy()
+                        wait(1)
+                        v.Handle.Anchored = true
+                    end
+                end
+            end
+        end
+        for i, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+            if v.Name == "Rock" and v.Handle:FindFirstChild("ToolWeld") then
+                v.Handle.ToolWeld:Destroy()
+                wait(1)
+                v.Handle.Anchored = true
+            else
+                for i, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+                    if v.ClassName == "Model" and v.Handle:FindFirstChild("ToolWeld") then
+                        v.Handle.ToolWeld:Destroy()
+                        wait(1)
+                        v.Handle.Anchored = true
+                    end
+                end
+            end
+        end
+    end
+})
+-- Among Us Button
+Home:AddButton({
+	Name = "Among Us",
+	Callback = function()
+        game.Players.LocalPlayer.Character.Head.Mesh:Destroy()
+        game.Players.LocalPlayer.Character.Head.Face:Destroy()
+        game.Players.LocalPlayer.Character.Head.HatAttachment:Destroy()
+        game.Players.LocalPlayer.Character.LeftUpperArm:Destroy()
+        game.Players.LocalPlayer.Character.RightUpperArm:Destroy()
+        game.Players.LocalPlayer.Character["Pants Basic"]:Destroy()
+    end
+})
+-- Infinite yield Button
+Home:AddButton({
+	Name = "Infinite Yield",
+	Callback = function()
+        loadstring(game:HttpGet(("https://raw.githubusercontent.com/HRT9014/open-source/main/infiniteshit"), true))()
+    end
+})
+-- Rejoin Server
+Home:AddButton({
+	Name = "Rejoin this server",
+	Callback = function()
+        game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, game:GetService("Players").LocalPlayer)
+    end
+})
+
+-- Anti Lag Button
+Home:AddToggle({
+    Name = "Fps Booster (very useful when u farm afk)",
+    Callback = function(value)
+        if value then
+            game:GetService("Lighting").GlobalShadows = true
+            game:GetService("Lighting").SunRays.Enabled = true
+        else
+            game:GetService("Lighting").SunRays.Enabled = false
+            game:GetService("Lighting").GlobalShadows = false
+        end
+    end
+})
+-- Auto Mine Toggle Patched
+Farm:AddToggle({
+	Name = "Auto Mine (nearest)",
+    Default = false,
+	Callback = function(value)
+        if value then
+            toggles.Mining = true
+            spawn(function()
+                while toggles.Mining do
+                    wait(0.1)
+                    mine_pls()
+                end
+            end)
+        else
+            toggles.Mining = false
+        end
+	end    
+})
+
+-- Auto Pickup Toggle
+Farm:AddToggle({
+	Name = "Auto Pickup",
+    Default = false,
+	Callback = function(value)
+        if value then
+            toggles.Pick = true
+            spawn(function()
+                while toggles.Pick do
+                    wait(0.03)
+                    pcall(function()
+                        for _, part in pairs(game.Workspace.Items:GetChildren()) do
+                            if part:IsA("Part") or part:IsA("MeshPart") or part:IsA('UnionOperation') then
+                                if math.floor(math.abs((game.Players.LocalPlayer.Character.HumanoidRootPart.Position - part.Position).Magnitude)) <= 50 then		
+                                    wait(0.005)
+                                    pickup_remote:FireServer(part)
+                                end
+                            elseif part:IsA('Model') then
+                                if part.PrimaryPart ~= nil and math.floor(math.abs((game.Players.LocalPlayer.Character.HumanoidRootPart.Position - part.PrimaryPart.Position).Magnitude)) <= 50 then
+                                    task.wait(0.005)
+                                    pickup_remote:FireServer(part)
+                                end
+                            end
+                        end
+                        for _, part in pairs(game:GetService("Workspace").ItemDrops:GetChildren()) do
+                            pickup_remote:FireServer(part)
+                        end
+                        for _, wow in pairs(game:GetService("Workspace").Deployables:GetChildren()) do
+                            if wow.Name == "Chest" and wow:IsA("Model") and wow:FindFirstChild('Contents') ~= nil and #wow.Contents:GetChildren() ~= 0 then
+                                for i, v in pairs(wow.Contents:GetChildren()) do
+                                    if v:IsA('Part') or v:IsA('MeshPart') or v:IsA('UnionOperation') then
+                                        pickup_remote:FireServer(v)
+                                    elseif v:IsA('Model') and v.PrimaryPart ~= nil then
+                                        pickup_remote:FireServer(v.PrimaryPart)
+                                    end
+                                end
+                            end
+                        end
+                    end)
+                end
+            end)
+        else
+            toggles.Pick = false
+        end
+	end    
+})
+
+-- Select Plant Dropdown
+Farm:AddDropdown({
+	Name = "Select Plant : ",
+	Default = "None",
+	Options = {"Orange", "Sunfruit", "Bloodfruit", "Berry", "Jelly", "Strangefruit", "Oddberry", "Bluefruit", "Apple", "Lemon", "Strawberry", "Pumpkin"},
+	Callback = function(Value)
+		selected_plant = Value
+	end
+})
+-- Auto Harvest Selected Toggle
+Farm:AddToggle({
+	Name = "Auto Harvest Selected",
+    Default = false,
+	Callback = function(value)
+        if value then
+            if selected_plant ~= "None" then
+                toggles.Harvesting = true
+                spawn(function()
+                    while toggles.Harvesting do
+                        wait(1)
+                        local theplant = selected_plant
+                        harvest(theplant)
+                    end
+                end)
+            else
+                OrionLib:MakeNotification({
+                    Name = "Notification",
+                    Content = "Select a plant first !",
+                    Image = "rbxassetid://4483345998",
+                    Time = 5
+                })
+            end
+        else
+            toggles.Harvesting = false
+        end
+    end
+})
+-- Auto Plant Selected Toggle
+Farm:AddToggle({
+    Name = "Auto Plant Selected",
+    Default = false,
+    Callback = function(value)
+        if value then
+            if selected_plant ~= "None" then
+                toggles.Planting = true
+                spawn(function()
+                    while toggles.Planting do
+                        task.wait(0.1)
+                        plant()
+                    end
+                end)
+            else
+                OrionLib:MakeNotification({
+                    Name = "Notification",
+                    Content = "Select a plant first !",
+                    Image = "rbxassetid://4483345998",
+                    Time = 5
+                })
+            end
+        else
+            toggles.Planting = false
+        end
+    end
+})
+-- Teleport to Positions Toggle
+Farm:AddToggle({
+    Name = "Teleport to Positions",
+    Default = false,
+    Callback = function(value)
+        if value then
+            toggles.tping = true
+            spawn(function()
+                repeat 
+                    wait()
+                    for i, v in ipairs(positions) do
+                        if toggles.tping and v ~= "" then
+                            local cf = StringToCFrame(v)
+                            tweenedtp(cf.X, cf.Y, cf.Z )
+                        else
+                            break
+                        end
+                    end
+                until toggles.tping == false
+            end)
+        else
+            toggles.tping = false
+        end
+    end
+})
+-- Clear Positions Button
+Farm:AddButton({
+    Name = "Clear Positions",
+    Callback = function()
+        positions = {"","","","","","","",""}
+        OrionLib:MakeNotification({
+            Name = "Notification",
+            Content = "Cleared Positions !",
+            Image = "rbxassetid://4483345998",
+            Time = 5
+        })
+    end
+})
+-- Select Positions Dropdown
+Farm:AddDropdown({
+	Name = "Select Position : ",
+	Default = "None",
+	Options = {"Position 1", "Position 2", "Position 3", "Position 4", "Position 5", "Position 6", "Position 7", "Position 8"},
+	Callback = function(Value)
+		selected_position = Value
+	end
+})
+-- Set Position Button
+Farm:AddButton({
+    Name = "Set your position (to selected position)",
+    Callback = function()
+        if selected_position ~= "None" then
+            positions[tonumber(selected_position:split(" ")[2])] = tostring(game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame)
+            OrionLib:MakeNotification({
+                Name = "Notification",
+                Content = "Position set!",
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+        end
+    end
+})
+-- Auto Eat Button
+Farm:AddToggle({
+    Name = "Auto Eat Selected (for not starve) every 15s",
+    Default = false,
+	Callback = function(value)
+        if value then
+            toggles.Eating = true
+            spawn(function()
+                while toggles.Eating do
+                    wait(15)
+                    use_remote:FireServer(selected_plant)
+                end
+            end)
+        else
+            toggles.Eating = false
+        end
+    end
+})
+-- Auto Craft Arrows Toggle
+Farm:AddToggle({
+	Name = "Auto Craft Arrows",
+    Default = false,
+	Callback = function(value)
+		if value then
+            toggles.CraftArrow = true
+            spawn(function()
+                while toggles.CraftArrow do
+                    wait()
+                    
+                    remote_craft:FireServer('Arrow')
+                end
+            end)
+        else
+            toggles.CraftArrow = false
+        end
+	end    
+})
+-- Auto Drop Arrows Toggle
+Farm:AddToggle({
+	Name = "Auto Drop Arrows",
+    Default = false,
+	Callback = function(value)
+		if value then
+            toggles.DropArrow = true
+            spawn(function()
+                while toggles.DropArrow do
+                    wait()
+                    local inv = game:GetService("Players").LocalPlayer.PlayerGui.MainGui.RightPanel.Inventory.List
+				    for i, shit in pairs(inv:GetChildren()) do
+                        if shit:IsA('ImageLabel') and shit.Name == "Arrow" then
+                            remote_drop:FireServer(shit.LayoutOrder)
+                        end
+                    end
+                end
+            end)
+        else
+            toggles.DropArrow = false
+        end
+	end    
+})
+-- Kill Aura Toggle (have to fix)
+Combat:AddToggle({
+    Name = "Kill Aura (op asf)",
+    Default = false,
+    Callback = function(value)
+        if value then
+            toggles.killing = true
+            while toggles.killing do
+                task.wait(0.02)
+				if game.Players.LocalPlayer.Character:FindFirstChild('Humanoid') ~= nil then
+                    for i, v in pairs(game.Workspace:GetChildren()) do
+                        if toggles.killing == true and v:IsA("Model") and v:FindFirstChild("LowerTorso") and v:FindFirstChild("Humanoid") and v.Humanoid.Health >= 0 and v:FindFirstChild("Head") and v.Name ~= game.Players.LocalPlayer.Character.Name and (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v.HumanoidRootPart.Position).magnitude <= 15 then
+                            local args = {
+                                v.UpperTorso
+                            }
+                            swing_remote:FireServer({unpack(args)})
+                        end
+                    end
+                end
+            end
+        else
+            toggles.killing = false
+        end
+    end
+})
+local heal_event = nil
+-- Auto Heal Toggle
+Combat:AddToggle({
+    Name = "Auto Heal (Bloodfruit only)",
+    Default = false,
+    Callback = function(value)
+        if value then
+            toggles.healing = true
+            spawn(function()
+                while toggles.healing do
+                    local rdm = math.random(1,3)
+                    if game.Players.LocalPlayer.Character:FindFirstChild('Humanoid') ~= nil and game.Players.LocalPlayer.Character.Humanoid.Health < 100 and rdm == 3 then
+                        local inv = game:GetService("Players").LocalPlayer.PlayerGui.MainGui.RightPanel.Inventory.List
+                        local dalayout = nil
+                        for i, shit in pairs(inv:GetChildren()) do
+                            if shit:IsA('ImageLabel') and shit.Name == "Bloodfruit" then
+                                dalayout = shit.LayoutOrder
+                            end
+                        end
+                        for i=1,8 do
+                            if dalayout ~= nil then
+                                use_remote:FireServer(dalayout)
+                            end
+                        end
+                        task.wait()
+                    else
+                        local rdm = math.random(1,3)
+                        if rdm == 3 then
+                            task.wait()
+                        end
+                    end
+                end
+            end)
+        else
+            toggles.healing = false
+        end
+    end
+})
+
+-- Hitbox Expander Toggle (have to fix)
+Combat:AddToggle({
+    Name = "HitBox Expander",
+    Default = false,
+    Callback = function(value)
+        if value then
+            toggles.hitboxing = true
+            for i, v in pairs(game.Workspace:GetChildren()) do
+                if v:IsA("Model") and v:FindFirstChild("Head") then
+                    v.Head.Size = Vector3.new(15, 15, 15)
+                    game.Players.LocalPlayer.Character.Head.Massless = true
+                    v.Head.Transparency = 0.9
+                    v.Head.Massless = true
+                    game.Players.LocalPlayer.Character.Head.Size = Vector3.new(2, 1, 1)
+                    game.Players.LocalPlayer.Character.Head.Transparency = 0
+                end
+            end
+        else
+            toggles.hitboxing = false
+            for i, v in pairs(game.Workspace:GetChildren()) do
+                if v:IsA("Model") and v:FindFirstChild("Head") then
+                    v.Head.Size = Vector3.new(2, 1, 1)
+                    game.Players.LocalPlayer.Character.Head.Massless = true
+                    v.Head.Transparency = 0
+                    v.Head.Massless = true
+                    game.Players.LocalPlayer.Character.Head.Size = Vector3.new(2, 1, 1)
+                    game.Players.LocalPlayer.Character.Head.Transparency = 0
+                end
+            end
+        end
+    end
+})
+--Anti Combat Toggle
+Combat:AddToggle({
+    Name = "Get Back Your Stuff On Death (patched)",
+    Default = false,
+    Callback = function(value)
+        if value then
+            toggles.anticombat = true
+        else
+            toggles.anticombat = false
+        end
+    end
+})
+function hutnearest(plr)
+    if plr.Character:FindFirstChild('Humanoid') ~= nil and plr.Character:FindFirstChild('HumanoidRootPart') ~= nil then
+        local hrt = plr.Character.HumanoidRootPart
+        local myhrt = game.Players.LocalPlayer.Character.HumanoidRootPart
+        local foot = plr.Character.LeftFoot
+        local Eventa = game:GetService("ReplicatedStorage").Events.PlaceStructure
+
+        Eventa:FireServer(Vector3.new(hrt.Position.X + 0.5, foot.Position.Y, hrt.Position.Z -0.5), "Big Ol' Hut", 0, false)
+    end
+end
+-- Hut Nearest Player 
+Combat:AddBind({
+	Name = "Hut Nearest Player",
+	Default = Enum.KeyCode.G,
+	Hold = false,
+	Callback = function()
+        for i, v in pairs(workspace:GetChildren()) do
+            if v:IsA('Model') and game.Players:FindFirstChild(v.Name) and v:FindFirstChild('HumanoidRootPart') ~= nil then
+                local nearestPlayer, nearestDistance
+
+                for _, player in ipairs(game.Players:GetPlayers()) do
+                    if player ~= game.Players.LocalPlayer and player.Character:FindFirstChild("HumanoidRootPart") then
+                        local character = player.Character.HumanoidRootPart
+                        local myCharacter = game.Players.LocalPlayer.Character.HumanoidRootPart
+                        local distance = getDistance(myCharacter.Position, character.Position)
+                        if (not nearestDistance or distance < nearestDistance) and distance < 50 then
+                            nearestDistance = distance
+                            nearestPlayer = player
+                        end
+                    end
+                end
+            
+                if nearestPlayer then
+                    print("Nearest player: " .. nearestPlayer.Name .. " | Distance: " .. nearestDistance)
+                    hutnearest(game.Players:FindFirstChild(v.Name))
+                    break
+                else
+                    print("No other players found within 25 units.")
+                end
+            end
+        end
+	end    
+})
+-- Silent Aim Toggle
+Combat:AddToggle({
+    Name = "Silent Aim (patched atm)",
+    Default = false,
+    Callback = function(value)
+        if value then
+            toggles.aiming = true
+        else
+            toggles.aiming = false
+        end
+    end
+})
+
+-- Players Esp Toggle
+local example2 = ESPER
+Esp:AddToggle({
+    Name = 'Players ESP (fixed)',
+    Default = false,
+    Callback = function(value)
+        if value then
+            toggles.esping = true
+            spawn(function()
+                while toggles.esping do
+                    wait()
+                    pcall(function()
+                        if game.Players.LocalPlayer.Character ~= nil then
+                            for _, player in pairs(game.Players:GetPlayers()) do
+                                if player.Character:FindFirstChild('HumanoidRootPart') then
+                                    if player.Character ~= nil and player.Character:FindFirstChild('Head') and player.Name ~= game.Players.LocalPlayer.Name then
+                                        local vector, isOnScreen = game.Workspace.CurrentCamera:WorldToScreenPoint(player.Character.Head.Position)
+                                        if isOnScreen == true then
+                                            if player.Character.Head:FindFirstChild("abc") then
+                                                local thing = player.Character.Head.abc
+                                                thing.TextLabel.Text = thing.Parent.Parent.Name.."\n"..math.floor(math.abs((thing.Parent.Parent.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude)).." Studs"
+                                            else
+                                                local cln = example2:Clone()
+                                                cln.Enabled = true
+                                                cln.Name = "abc"
+                                                cln.Parent = player.Character.Head
+                                                cln.TextLabel.TextColor3 = Color3.new(255, 255, 255)
+                                            end
+                                        else
+                                            if player.Character.Head:FindFirstChild("abc") then
+                                                player.Character.Head.abc:Destroy()
+                                            end
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end)
+                end
+            end)
+        else
+            toggles.esping = false
+            wait(0.1)
+            for _, thing in pairs(game.Workspace:GetDescendants()) do
+                if thing:IsA('BillboardGui') and thing.Name == "abc" then
+                    thing:Destroy()
+                end
+            end
+        end
+    end
+})
+
+Esp:AddDropdown({
+    Name = 'Select Ore to Esp : ',
+    Default = "None",
+    Options = {"None", "Gold Node", "Crystal Lode", "Iron Node", "Coal Node", "Adurite Node"},
+    Callback = function(value)
+        selected_ore = value
+        for _, esper2 in pairs(game.Workspace:GetDescendants()) do
+            if esper2:IsA('BillboardGui') and esper2.Name == "ORE_ESPER" then
+                esper2:Destroy()
+            end
+            if esper2:IsA("Highlight") and esper2.Name == "alighter" then
+                esper2:Destroy()
+            end
+        end
+        local anore = value
+        if anore == "None" then
+            for _, esper2 in pairs(game.Workspace:GetDescendants()) do
+                if esper2:IsA('BillboardGui') and esper2.Name == "ORE_ESPER" then
+                    esper2:Destroy()
+                end
+                if esper2:IsA("Highlight") and esper2.Name == "alighter" then
+                    esper2:Destroy()
+                end
+            end
+        else
+            for _, ore in pairs(game.Workspace.Resources:GetChildren()) do
+                if ore:IsA("Model") and ore.Name == anore then
+                    if ore:FindFirstChild('Small Rock') then
+                        local highlight = Instance.new('Highlight')
+                        highlight.Parent = ore['Small Rock']
+                        highlight.FillColor = Color3.new(0, 1, 0)
+                        highlight.OutlineTransparency = 1
+                        highlight.Name = "alighter"
+                        local cln2 = ESPER:Clone()
+                        cln2.Enabled = true
+                        cln2.Name = "ORE_ESPER"
+                        cln2.Parent = ore['Small Rock']
+                        cln2.TextLabel.Text = anore
+                    elseif ore:FindFirstChild("Stone") then
+                        local highlight = Instance.new('Highlight')
+                        highlight.Parent = ore.Stone
+                        highlight.FillColor = Color3.new(0, 1, 0)
+                        highlight.OutlineTransparency = 1
+                        highlight.Name = "alighter"
+                        local cln2 = ESPER:Clone()
+                        cln2.Enabled = true
+                        cln2.Name = "ORE_ESPER"
+                        cln2.Parent = ore.Stone
+                        cln2.TextLabel.Text = anore
+                    end
+                end
+            end
+        end
+    end
+})
+
+Build:AddToggle({
+    Name = " auto 3x3 place plant box",
+    Default = false,
+    Callback = function(value)
+        if value then
+            toggles.plantboxing3 = true
+
+            spawn(function()
+                while toggles.plantboxing3 do
+                    local Eventa = game:GetService("ReplicatedStorage").Events.PlaceStructure
+                    local ha
+                    local k_2a
+
+                    ha = game.Players.LocalPlayer.Character.LowerTorso.Position
+                    local ha2 = game.Players.LocalPlayer.Character.LeftFoot.Position
+                    local table_lol = {
+                        name = "Plant Box",
+                        value = 0,
+
+                        aaaaa = ha.x,
+                        bbbba = ha2.y,
+                        cccca = ha.z, -- PLANTBOX 1
+
+                        aaaaa2 = ha.x - 8,
+                        bbbba2 = ha2.y,
+                        cccca2 = ha.z, -- PLANTBOX2
+
+                        aaaaa3 = ha.x + 8,
+                        bbbba3 = ha2.y,
+                        cccca3 = ha.z, -- PLANTBOX3
+
+                        aaaaa4 = ha.x,
+                        bbbba4 = ha2.y,
+                        cccca4 = ha.z - 8, -- PLANTBOX4
+
+                        aaaaa5 = ha.x,
+                        bbbba5 = ha2.y,
+                        cccca5 = ha.z + 8, --PLANTBOX5
+
+                        aaaaa6 = ha.x + 8,
+                        bbbba6 = ha2.y,
+                        cccca6 = ha.z + 8, --PLANTBOX6
+
+                        aaaaa7 = ha.x - 8,
+                        bbbba7 = ha2.y,
+                        cccca7 = ha.z - 8, --PLANTBOX7
+
+                        aaaaa8 = ha.x + 8,
+                        bbbba8 = ha2.y,
+                        cccca8 = ha.z - 8,
+
+                        aaaaa9 = ha.x - 8,
+                        bbbba9 = ha2.y,
+                        cccca9 = ha.z + 8, --PLANTOBOX9 finally
+                    }
+                    Eventa:FireServer(Vector3.new(table_lol.aaaaa, table_lol.bbbba, table_lol.cccca), table_lol.name, table_lol.value, false)
+                    wait(0.2)
+                    Eventa:FireServer(Vector3.new(table_lol.aaaaa2, table_lol.bbbba2, table_lol.cccca2), table_lol.name, table_lol.value, false)
+                    wait(0.2)
+                    Eventa:FireServer(Vector3.new(table_lol.aaaaa3, table_lol.bbbba3, table_lol.cccca3), table_lol.name, table_lol.value, false)
+                    wait(0.2)
+                    Eventa:FireServer(Vector3.new(table_lol.aaaaa4, table_lol.bbbba4, table_lol.cccca4), table_lol.name, table_lol.value, false)
+                    wait(0.2)
+                    Eventa:FireServer(Vector3.new(table_lol.aaaaa5, table_lol.bbbba5, table_lol.cccca5), table_lol.name, table_lol.value, false)
+                    wait(0.2)
+                    Eventa:FireServer(Vector3.new(table_lol.aaaaa6, table_lol.bbbba6, table_lol.cccca6), table_lol.name, table_lol.value, false)
+                    wait(0.2)
+                    Eventa:FireServer(Vector3.new(table_lol.aaaaa7, table_lol.bbbba7, table_lol.cccca7), table_lol.name, table_lol.value, false)
+                    wait(0.2)
+                    Eventa:FireServer(Vector3.new(table_lol.aaaaa8, table_lol.bbbba8, table_lol.cccca8), table_lol.name, table_lol.value, false)
+                    wait(0.2)
+                    Eventa:FireServer(Vector3.new(table_lol.aaaaa9, table_lol.bbbba9, table_lol.cccca9), table_lol.name, table_lol.value, false)
+                end
+            end)
+        else
+            toggles.plantboxing3 = false
+        end
+    end
+})
+Build:AddToggle({
+    Name = " auto 1x1 plant box",
+    Default = false,
+    Callback = function(value)
+        if value then
+            toggles.plantboxing = true
+
+            spawn(function()
+                while toggles.plantboxing do
+                    local Eventa = game:GetService("ReplicatedStorage").Events.PlaceStructure
+                    local ha
+
+                    ha = game.Players.LocalPlayer.Character.LowerTorso.Position
+                    local ha2 = game.Players.LocalPlayer.Character.LeftFoot.Position
+                    local table_lol = {
+                        name = "Plant Box",
+                        value = 0,
+
+                        aaaaa = ha.x,
+                        bbbba = ha2.y,
+                        cccca = ha.z, -- PLANTBOX 1
+                    }
+                    Eventa:FireServer(Vector3.new(table_lol.aaaaa, table_lol.bbbba, table_lol.cccca), table_lol.name, table_lol.value, false)
+                    wait(0.1)
+                end
+            end)
+        else   
+            toggles.plantboxing = false
+        end
+    end
+})
+-- High Jumper Toggle
+Misc:AddToggle({
+    Name = "High Jumper",
+    Default = false,
+    Callback = function(value)
+        if value then
+            toggles.highjump = true
+            game.Players.LocalPlayer.Character.Humanoid.UseJumpPower = false
+            game.Players.LocalPlayer.Character.Humanoid.JumpHeight = 17.5
+        else
+            toggles.highjump = false
+            game.Players.LocalPlayer.Character.Humanoid.UseJumpPower = true
+            game.Players.LocalPlayer.Character.Humanoid.JumpHeight = 7.2
+        end
+    end
+})
+local da_connection = nil
+Misc:AddSlider({
+    Name = "WalkSpeed Changer",
+    Min = 16,
+    Max = 22,
+    Default = 16,
+    Color = Color3.fromRGB(250, 198, 14),
+    Increment = 1,
+    ValueName = "Walk Speed",
+    Callback = function(Value)
+        if Value == 16 then
+            if second_connection ~= nil then
+                second_connection:Disconnect()
+            end
+            if da_connection ~= nil then
+                da_connection:Disconnect()
+            end
+        else
+            walks = tonumber(Value)
+            local hum = game.Players.LocalPlayer.Character.Humanoid
+            da_connection = hum:GetPropertyChangedSignal("WalkSpeed"):Connect(changewalkspeed)
+            pcall(changewalkspeed)
+        end
+    end
+})
+
+-- Essence Farm Toggle
+local davaluefr
+saved_toggles.essence_farm = false
+
+Misc:AddToggle({
+    Name = "Essence Farm (patched atm)",
+    Default = davaluefr,
+    Callback = function(value)
+        if value then
+            -- saved_toggles.essence_farm = true
+            savesettings()
+            wait(2)
+            -- essence()
+        else
+            -- saved_toggles.essence_farm = false
+            savesettings()
+        end
+    end
+})
+Misc:AddLabel("ancient tree + (serverhop) + put the script in auto execute")
+
+Misc:AddToggle({
+    Name = "Change Water Color", 
+    Default = false,
+    Callback = function(value)
+        if value then
+            game.Workspace.Terrain.WaterColor = Color3.fromRGB(0, 0, 255)
+        else
+            game.Workspace.Terrain.WaterColor = Color3.fromRGB(87, 129, 131)
+        end
+    end
+})
+-- Destroy UI Button
+Other:AddButton({
+    Name = "Destroy UI",
+    Callback = function()
+        for i, v in pairs(toggles) do
+            v = false
+        end
+        wait()
+        OrionLib:Destroy()
+        pcall(function()
+            game.Workspace:FindFirstChild('NIGGA'):Destroy()
+        end)
+    end
+})
+Other:AddToggle({
+    Name = "Anti Afk",
+    Default = true,
+    Callback = function(value)
+        if value then
+            print('afk script loaded')
+        end
+    end
+})
+local randomvaluelmao = 0
+Other:AddButton({
+    Name = "Pop ! (will be added soon :o)",
+    Callback = function(value)
+        randomvaluelmao += 1
+        if randomvaluelmao == 5 then
+            if dev_ == "NO NIGGA" then
+                pcall(function()
+                    wait(3)
+                    if randomvaluelmao == 5 then
+                        print('Developer Mode Enabled')
+                        dev_ = "YES NIGGA"
+                        OrionLib:MakeNotification({
+                            Name = "Developer Mode : ON",
+                            Content = "Welcome Back "..game.Players.LocalPlayer.Name.." !",
+                            Image = "rbxassetid://4483345998",
+                            Time = 5
+                        })
+                        OrionLib:MakeNotification({
+                            Name = "Developer Mode : ON",
+                            Content = "Skid Hunter + ANTI MONKEY : Disabled",
+                            Image = "rbxassetid://4483345998",
+                            Time = 5
+                        })
+                        game.Workspace.NIGGA:Destroy()
+                        getgenv().aa = true
+                    end
+                end)
+            end
+        end
+    end
+})
+-- Speed Bypass Toggle
+DaTab:AddToggle({
+	Name = "Speed Bypass (Disable when you don't use)",
+    Default = false,
+    Callback = function(value)
+        if value then
+            toggles.FastSpeed = true
+            spawn(function()
+                settings():GetService("NetworkSettings").IncomingReplicationLag = 2
+                while toggles.FastSpeed do
+                    wait(0.05)
+                    if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.W) and toggles.FastSpeed == true then game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -2) end
+                    if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.S) and toggles.FastSpeed == true then game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 2) end
+                    if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.D) and toggles.FastSpeed == true then game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(2, 0, 0) end
+                    if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.A) and toggles.FastSpeed == true then game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(-2, 0, 0) end
+                end
+            end)
+        else
+            settings():GetService("NetworkSettings").IncomingReplicationLag = 0
+            toggles.FastSpeed = false
+        end
+    end
+})
+
+Other:AddLabel('Credits : Golden Fire and Dynscript ! Skid Hunter made by Devil')
+-- ANTI MONKEY
+if game.Workspace:FindFirstChild('NIGGA') and game.Workspace:FindFirstChild('NIGGA'):IsA('Folder') then
+-- game.Players.LocalPlayer:Kick("Executed UI more than 1 time, rejoin please")
+else
+    local NIGGA = Instance.new('Folder')
+    NIGGA.Parent = game.Workspace
+    NIGGA.Name = "NIGGA"
+end
+-- SKID HUNTER
+spawn(function()
+    wait(1)
+    warn("Skid Hunter *Enabled* ur about to get fucked lmao")
+    local CoreGui = game:GetService("CoreGui")
+    function Check()
+        for i,v in pairs(CoreGui:GetDescendants()) do
+            if v.ClassName == "Frame" and v.Name == "ScriptEditor" then
+                spawn(function()
+                    wait(0.5)
+                    spawn(function()
+                        print('nigga got detected')
+                        game:service('Players').LocalPlayer:Kick('Get a life Skid Nigga')
+                    end)
+                    spawn(function()
+                        wait(1)
+                        while true do end
+                    end)
+                end)
+            end
+        end
+    end
+    Check()
+    if getgenv().aa == true then
+    else
+        CoreGui.ChildAdded:Connect(function()
+            Check()
+        end)
+        CoreGui.ChildAdded:Connect(function()
+            Check()
+        end)
+    end
+    getgenv().aa = true
+end)
+
+--Anti Crash
+spawn(function()
+    while wait(1) do
+      if game.CoreGui.RobloxPromptGui.promptOverlay:FindFirstChild("ErrorPrompt") then
+          game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, game.Players.LocalPlayer)
+      end
+    end
+  end)
+
+--Loaded !
+print("██╗░░░░░░█████╗░░█████╗░██████╗░███████╗██████╗░  ██╗")
+print("██║░░░░░██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗  ██║")
+print("██║░░░░░██║░░██║███████║██║░░██║█████╗░░██║░░██║  ██║")
+print("██║░░░░░██║░░██║██╔══██║██║░░██║██╔══╝░░██║░░██║  ╚═╝")
+print("███████╗╚█████╔╝██║░░██║██████╔╝███████╗██████╔╝  ██╗")
+print("╚══════╝░╚════╝░╚═╝░░╚═╝╚═════╝░╚══════╝╚═════╝░  ╚═╝")
+
+
+-- Initialising this shit
+OrionLib:Init()
